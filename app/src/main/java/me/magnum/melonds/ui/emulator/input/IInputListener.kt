@@ -6,5 +6,6 @@ import me.magnum.melonds.domain.model.Point
 interface IInputListener {
     fun onKeyPress(key: Input)
     fun onKeyReleased(key: Input)
+    fun onFastForwardHoldChanged(held: Boolean) {}
     fun onTouch(point: Point)
 }

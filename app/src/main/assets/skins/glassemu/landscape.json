@@ -1,0 +1,249 @@
+{
+  "mappingSize": {
+    "width": 1844,
+    "height": 853
+  },
+  "assets": {
+    "resizable": "landscape.png"
+  },
+  "extendedEdges": {
+    "top": 0,
+    "bottom": 0,
+    "left": 0,
+    "right": 0
+  },
+  "screens": [
+    {
+      "inputFrame": {
+        "x": 0,
+        "y": 0,
+        "width": 256,
+        "height": 192
+      },
+      "outputFrame": {
+        "x": 398,
+        "y": 49,
+        "width": 848,
+        "height": 636
+      }
+    },
+    {
+      "inputFrame": {
+        "x": 0,
+        "y": 192,
+        "width": 256,
+        "height": 192
+      },
+      "outputFrame": {
+        "x": 1284,
+        "y": 49,
+        "width": 496,
+        "height": 372
+      }
+    }
+  ],
+  "items": [
+    {
+      "inputs": {
+        "up": "up",
+        "down": "down",
+        "left": "left",
+        "right": "right"
+      },
+      "frame": {
+        "x": 80,
+        "y": 482,
+        "width": 266,
+        "height": 252
+      },
+      "extendedEdges": {
+        "top": 25,
+        "bottom": 25,
+        "left": 25,
+        "right": 25
+      }
+    },
+    {
+      "inputs": {
+        "up": "up",
+        "down": "down",
+        "left": "left",
+        "right": "right"
+      },
+      "frame": {
+        "x": 147,
+        "y": 243,
+        "width": 140,
+        "height": 140
+      },
+      "extendedEdges": {
+        "top": 40,
+        "bottom": 40,
+        "left": 40,
+        "right": 40
+      },
+      "thumbstick": {
+        "name": "thumbstick.png",
+        "width": 266,
+        "height": 266
+      }
+    },
+    {
+      "inputs": {
+        "up": "x",
+        "down": "b",
+        "left": "y",
+        "right": "a"
+      },
+      "frame": {
+        "x": 1456,
+        "y": 444,
+        "width": 299,
+        "height": 275
+      },
+      "extendedEdges": {
+        "top": 25,
+        "bottom": 25,
+        "left": 25,
+        "right": 25
+      }
+    },
+    {
+      "inputs": [
+        "l"
+      ],
+      "frame": {
+        "x": 398,
+        "y": 732,
+        "width": 168,
+        "height": 68
+      },
+      "extendedEdges": {
+        "top": 25,
+        "bottom": 25,
+        "left": 25,
+        "right": 25
+      }
+    },
+    {
+      "inputs": [
+        "r"
+      ],
+      "frame": {
+        "x": 1272,
+        "y": 732,
+        "width": 168,
+        "height": 68
+      },
+      "extendedEdges": {
+        "top": 25,
+        "bottom": 25,
+        "left": 25,
+        "right": 25
+      }
+    },
+    {
+      "inputs": [
+        "select"
+      ],
+      "frame": {
+        "x": 1288,
+        "y": 490,
+        "width": 60,
+        "height": 60
+      },
+      "extendedEdges": {
+        "top": 15,
+        "bottom": 15,
+        "left": 15,
+        "right": 15
+      }
+    },
+    {
+      "inputs": [
+        "start"
+      ],
+      "frame": {
+        "x": 1288,
+        "y": 592,
+        "width": 60,
+        "height": 60
+      },
+      "extendedEdges": {
+        "top": 15,
+        "bottom": 15,
+        "left": 15,
+        "right": 15
+      }
+    },
+    {
+      "inputs": [
+        "toggleFastForward"
+      ],
+      "frame": {
+        "x": 186,
+        "y": 72,
+        "width": 76,
+        "height": 74
+      },
+      "extendedEdges": {
+        "top": 20,
+        "bottom": 20,
+        "left": 20,
+        "right": 20
+      }
+    },
+    {
+      "inputs": [
+        "fastForward"
+      ],
+      "frame": {
+        "x": 414,
+        "y": 65,
+        "width": 816,
+        "height": 604
+      },
+      "extendedEdges": {
+        "top": 0,
+        "bottom": 0,
+        "left": 0,
+        "right": 0
+      }
+    },
+    {
+      "inputs": [
+        "menu"
+      ],
+      "frame": {
+        "x": 834,
+        "y": 727,
+        "width": 126,
+        "height": 76
+      },
+      "extendedEdges": {
+        "top": 25,
+        "bottom": 25,
+        "left": 25,
+        "right": 25
+      }
+    },
+    {
+      "inputs": {
+        "x": "touchScreenX",
+        "y": "touchScreenY"
+      },
+      "frame": {
+        "x": 1284,
+        "y": 49,
+        "width": 496,
+        "height": 372
+      },
+      "extendedEdges": {
+        "top": 0,
+        "bottom": 0,
+        "left": 0,
+        "right": 0
+      }
+    }
+  ]
+}

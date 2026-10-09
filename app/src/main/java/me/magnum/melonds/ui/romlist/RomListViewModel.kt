@@ -66,10 +66,10 @@ class RomListViewModel @Inject constructor(
 
         combine(romsRepository.getRoms(), _searchQuery) { roms, query ->
             val romList = if (query.isEmpty()) {
-                roms
+                roms.filterNot { it.fileName.startsWith("_") || it.fileName.startsWith("._") || it.name.startsWith("_") }
             } else {
                 withContext(Dispatchers.Default) {
-                    roms.filter { rom ->
+                    roms.filterNot { it.fileName.startsWith("_") || it.fileName.startsWith("._") || it.name.startsWith("_") }.filter { rom ->
                         if (!isActive) {
                             return@withContext emptyList()
                         }
@@ -94,6 +94,13 @@ class RomListViewModel @Inject constructor(
                 SortingMode.RECENTLY_PLAYED -> _roms.value?.sortedWith(buildRecentlyPlayedRomComparator(sortingOrder))
             }
         }.launchIn(viewModelScope)
+    }
+
+    fun renameRom(rom: Rom, name: String) {
+        val config = rom.config.copy(customName = name.trim().takeIf { it.isNotEmpty() })
+        // Publish a new value before the repository mutates its existing ROM object.
+        _roms.value = _roms.value?.map { if (it.uri == rom.uri) it.copy(config = config) else it.copy() }
+        romsRepository.updateRomConfig(rom, config)
     }
 
     fun refreshRoms() {
@@ -146,11 +153,11 @@ class RomListViewModel @Inject constructor(
     private fun buildAlphabeticalRomComparator(sortingOrder: SortingOrder): Comparator<Rom> {
         return if (sortingOrder == SortingOrder.ASCENDING) {
             Comparator { o1: Rom, o2: Rom ->
-                o1.name.compareTo(o2.name)
+                (o1.config.customName ?: o1.name).compareTo(o2.config.customName ?: o2.name)
             }
         } else {
             Comparator { o1: Rom, o2: Rom ->
-                o2.name.compareTo(o1.name)
+                (o2.config.customName ?: o2.name).compareTo(o1.config.customName ?: o1.name)
             }
         }
     }
@@ -159,7 +166,7 @@ class RomListViewModel @Inject constructor(
         return if (sortingOrder == SortingOrder.ASCENDING) {
             Comparator { o1: Rom, o2: Rom ->
                 when {
-                    o1.lastPlayed == null && o2.lastPlayed == null -> o1.name.compareTo(o2.name)
+                    o1.lastPlayed == null && o2.lastPlayed == null -> (o1.config.customName ?: o1.name).compareTo(o2.config.customName ?: o2.name)
                     o1.lastPlayed == null -> -1
                     o2.lastPlayed == null -> 1
                     else -> o1.lastPlayed!!.compareTo(o2.lastPlayed)
@@ -168,7 +175,7 @@ class RomListViewModel @Inject constructor(
         } else {
             Comparator { o1: Rom, o2: Rom ->
                 when {
-                    o1.lastPlayed == null && o2.lastPlayed == null -> o1.name.compareTo(o2.name)
+                    o1.lastPlayed == null && o2.lastPlayed == null -> (o1.config.customName ?: o1.name).compareTo(o2.config.customName ?: o2.name)
                     o2.lastPlayed == null -> -1
                     o1.lastPlayed == null -> 1
                     else -> o2.lastPlayed!!.compareTo(o1.lastPlayed)

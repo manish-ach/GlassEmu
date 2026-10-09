@@ -240,7 +240,8 @@ class FileSystemRomsRepository(
         scanningStatus.value = RomScanningStatus.SCANNING
 
         val cachedRoms = getCachedRoms().filter {
-            DocumentFile.fromSingleUri(context, it.uri)?.exists() == true
+            !it.fileName.startsWith("_") && !it.fileName.startsWith("._") &&
+                DocumentFile.fromSingleUri(context, it.uri)?.exists() == true
         }
 
         roms.addAll(cachedRoms)
@@ -269,6 +270,8 @@ class FileSystemRomsRepository(
                 continue
             }
 
+            val name = file.name.orEmpty()
+            if (name.startsWith("_") || name.startsWith("._")) continue
             romFileProcessorFactory.getFileRomProcessorForDocument(file)?.let { fileRomProcessor ->
                 fileRomProcessor.getRomFromUri(file.uri, directory.uri)?.let { collector.emit(it) }
             }

@@ -27,18 +27,11 @@
             android:textColor="@android:color/white"
             tools:text="FPS: 60"/>
 
-    <TextView
-            android:id="@+id/textLoading"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:textSize="32sp"
-            android:textStyle="bold"
-            android:textColor="@android:color/white"
-            android:text="@string/info_loading"/>
+    <androidx.compose.ui.platform.ComposeView
+            android:id="@+id/loading_overlay"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/glass_background" />
 
     <androidx.compose.ui.platform.ComposeView
             android:id="@+id/layout_compose"

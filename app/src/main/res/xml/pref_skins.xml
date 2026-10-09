@@ -1,0 +1,4 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <ListPreference android:key="delta_skin" android:title="@string/active_skin" android:defaultValue="builtin" app:iconSpaceReserved="false" />
+    <Preference android:key="import_delta_skin" android:title="@string/import_delta_skin" android:summary="@string/import_delta_skin_summary" app:iconSpaceReserved="false" />
+</PreferenceScreen>

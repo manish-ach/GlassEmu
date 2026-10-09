@@ -66,7 +66,8 @@ import me.magnum.melonds.ui.common.component.romlist.ConfigurableRomItem
 import me.magnum.melonds.ui.romlist.RomIcon
 
 @Composable
-fun RomListScreen(
+// Previous toolbar and list retained for reference; disabled in the personal library.
+fun LegacyRomListScreen(
     roms: List<Rom>?,
     isRefreshing: Boolean,
     hasSearchDirectories: Boolean,

@@ -1,0 +1,24 @@
+<resources>
+    <item name="personal_settings_container" type="id" />
+    <style name="PersonalSettingsTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <item name="android:colorBackground">@color/glass_background</item>
+        <item name="colorSurface">@color/glass_surface</item>
+        <item name="colorPrimary">@color/glass_surface</item>
+        <item name="colorPrimaryDark">@color/glass_background</item>
+        <item name="colorAccent">@color/glass_accent</item>
+        <item name="android:textColorPrimary">@color/glass_text</item>
+        <item name="android:textColorSecondary">@color/glass_secondary</item>
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
+        <item name="alertDialogTheme">@style/PersonalSettingsDialog</item>
+        <item name="android:windowLightStatusBar">@bool/glass_light_bars</item>
+        <item name="android:windowLightNavigationBar">@bool/glass_light_bars</item>
+    </style>
+    <style name="PersonalSettingsDialog" parent="Theme.AppCompat.DayNight.Dialog.Alert">
+        <item name="android:colorBackground">@color/glass_surface</item>
+        <item name="colorAccent">@color/glass_accent</item>
+        <item name="android:textColorPrimary">@color/glass_text</item>
+        <item name="android:textColorSecondary">@color/glass_secondary</item>
+    </style>
+    <string name="library_back">Back</string>
+    <string name="library_settings_group_hint">Fine-tune your emulator</string>
+</resources>

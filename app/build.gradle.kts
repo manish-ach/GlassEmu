@@ -53,7 +53,13 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-            signingConfig = signingConfigs.getByName("release")
+            // Local optimized builds can coexist with the upstream app.
+            if (providers.gradleProperty("personalRelease").orNull == "true") {
+                signingConfig = signingConfigs.getByName("debug")
+                applicationIdSuffix = ".personal"
+            } else {
+                signingConfig = signingConfigs.getByName("release")
+            }
         }
         getByName("debug") {
             applicationIdSuffix = ".dev"

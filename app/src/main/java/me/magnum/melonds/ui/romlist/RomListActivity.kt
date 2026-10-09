@@ -45,11 +45,14 @@ import me.magnum.melonds.ui.theme.MelonTheme
 class RomListActivity : AppCompatActivity() {
 
     private val viewModel: RomListViewModel by viewModels()
-    private val updatesViewModel: UpdatesViewModel by viewModels()
+    // private val updatesViewModel: UpdatesViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
-        enableEdgeToEdge(statusBarStyle = SystemBarStyle.dark(Color.TRANSPARENT))
+        enableEdgeToEdge(
+            statusBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT),
+            navigationBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT),
+        )
         super.onCreate(savedInstanceState)
 
         val emulatorLauncherValidatorDelegate = EmulatorLaunchValidatorDelegate(this, object : EmulatorLaunchValidatorDelegate.Callback {
@@ -73,10 +76,11 @@ class RomListActivity : AppCompatActivity() {
             val romScanningStatus by viewModel.romScanningStatus.collectAsStateWithLifecycle(initialValue = RomScanningStatus.NOT_SCANNING)
             val hasSearchDirectories by viewModel.hasSearchDirectories.collectAsStateWithLifecycle(initialValue = true)
 
-            var currentUpdate by remember { mutableStateOf<AppUpdate?>(null) }
-            var downloadProgress by remember { mutableStateOf<DownloadProgress?>(null) }
+            // var currentUpdate by remember { mutableStateOf<AppUpdate?>(null) }
+            // var downloadProgress by remember { mutableStateOf<DownloadProgress?>(null) }
             var showInvalidDirectoryDialog by remember { mutableStateOf(false) }
 
+            /* Automatic update prompts disabled for the personal library.
             LaunchedEffect(Unit) {
                 updatesViewModel.appUpdate.collectLatest {
                     currentUpdate = it
@@ -100,6 +104,8 @@ class RomListActivity : AppCompatActivity() {
                 }
             }
 
+            */
+
             LaunchedEffect(Unit) {
                 viewModel.invalidDirectoryAccessEvent.collectLatest {
                     showInvalidDirectoryDialog = true
@@ -111,36 +117,23 @@ class RomListActivity : AppCompatActivity() {
                     roms = roms,
                     isRefreshing = romScanningStatus == RomScanningStatus.SCANNING,
                     hasSearchDirectories = hasSearchDirectories,
-                    onSearchQueryChange = viewModel::setRomSearchQuery,
-                    onSortChange = viewModel::setRomSorting,
-                    onFirmwareBoot = { consoleType ->
-                        emulatorLauncherValidatorDelegate.validateFirmware(consoleType)
-                    },
+                    // Search, sort, and firmware actions are disabled in the simplified library.
                     onRomSelected = { rom ->
                         viewModel.setRomLastPlayedNow(rom)
                         emulatorLauncherValidatorDelegate.validateRom(rom)
                     },
-                    onRomConfigClick = { rom ->
-                        val intent = Intent(this@RomListActivity, RomDetailsActivity::class.java).apply {
-                            putExtra(RomDetailsActivity.KEY_ROM, RomParcelable(rom))
-                        }
-                        startActivity(intent)
-                    },
                     onRefresh = viewModel::refreshRoms,
                     onDirectorySelected = viewModel::addRomSearchDirectory,
-                    onNavigateToSettings = {
-                        val intent = Intent(this@RomListActivity, SettingsActivity::class.java)
-                        startActivity(intent)
-                    },
-                    onNavigateToDsiWareManager = {
-                        val intent = Intent(this@RomListActivity, DSiWareManagerActivity::class.java)
-                        startActivity(intent)
+                    onRenameRom = viewModel::renameRom,
+                    onSettingsGroupSelected = { group ->
+                        startActivity(Intent(this@RomListActivity, SettingsActivity::class.java).putExtra(SettingsActivity.KEY_GROUP, group))
                     },
                     retrieveRomIcon = { rom ->
                         viewModel.getRomIcon(rom)
                     },
                 )
 
+                /* Update dialogs disabled for the personal library.
                 currentUpdate?.let { update ->
                     when (update.type) {
                         AppUpdate.Type.PRODUCTION -> {
@@ -184,6 +177,8 @@ class RomListActivity : AppCompatActivity() {
                         },
                     )
                 }
+
+                */
 
                 if (showInvalidDirectoryDialog) {
                     AlertDialog(

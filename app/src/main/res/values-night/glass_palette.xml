@@ -1,0 +1,12 @@
+<resources>
+    <color name="glass_background">#15111D</color>
+    <color name="glass_surface">#241D30</color>
+    <color name="glass_text">#FFFFFF</color>
+    <color name="glass_secondary">#AAA0B8</color>
+    <color name="glass_accent">#C6ABFF</color>
+    <color name="glass_nav">#F02E253B</color>
+    <color name="glass_selected">#443951</color>
+    <color name="glass_on_accent">#241D30</color>
+    <color name="glass_ripple">#334F376C</color>
+    <bool name="glass_light_bars">false</bool>
+</resources>

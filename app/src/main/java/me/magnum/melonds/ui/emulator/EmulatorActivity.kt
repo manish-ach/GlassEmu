@@ -164,6 +164,8 @@ class EmulatorActivity : AppCompatActivity() {
     @Inject
     lateinit var appForegroundStateObserver: AppForegroundStateObserver
 
+    private val showLoadingOverlay = mutableStateOf(true)
+    private var appliedDeltaSkin: String? = null
     private var presentation: ExternalPresentation? = null
 
     private lateinit var handler: Handler
@@ -198,6 +200,8 @@ class EmulatorActivity : AppCompatActivity() {
     private val frontendInputHandler = object : FrontendInputHandler() {
         var fastForwardEnabled = false
             private set
+        private var fastForwardToggled = false
+        private var fastForwardHeld = false
         var microphoneEnabled = true
             private set
 
@@ -211,7 +215,17 @@ class EmulatorActivity : AppCompatActivity() {
         }
 
         override fun onFastForwardPressed() {
-            fastForwardEnabled = !fastForwardEnabled
+            fastForwardToggled = !fastForwardToggled
+            updateFastForward()
+        }
+
+        override fun onFastForwardHoldChanged(held: Boolean) {
+            fastForwardHeld = held
+            updateFastForward()
+        }
+
+        private fun updateFastForward() {
+            fastForwardEnabled = fastForwardToggled || fastForwardHeld
             binding.viewLayoutControls.setLayoutComponentToggleState(LayoutComponent.BUTTON_FAST_FORWARD_TOGGLE, fastForwardEnabled)
             presentation?.layoutView?.setLayoutComponentToggleState(LayoutComponent.BUTTON_FAST_FORWARD_TOGGLE, fastForwardEnabled)
             MelonEmulator.setFastForwardEnabled(fastForwardEnabled)
@@ -289,6 +303,9 @@ class EmulatorActivity : AppCompatActivity() {
         binding = ActivityEmulatorBinding.inflate(layoutInflater)
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE)
         setContentView(binding.root)
+        binding.loadingOverlay.setContent {
+            MelonTheme { if (showLoadingOverlay.value) GlassLoadingScreen() }
+        }
         setupFullscreen()
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, windowInsets ->
             val insets = windowInsets.getInsets(WindowInsetsCompat.Type.displayCutout())
@@ -543,11 +560,7 @@ class EmulatorActivity : AppCompatActivity() {
             lifecycle.repeatOnLifecycle(Lifecycle.State.CREATED) {
                 viewModel.emulatorState.collectLatest {
                     when (it) {
-                        is EmulatorState.Uninitialized -> {
-                            binding.viewLayoutControls.isInvisible = true
-                            binding.textFps.isGone = true
-                            binding.textLoading.isGone = true
-                        }
+                        is EmulatorState.Uninitialized -> showLoadingState()
                         is EmulatorState.ValidatingFirmware -> {
                             showLoadingState()
                             emulatorMotionManager.stop()
@@ -564,7 +577,7 @@ class EmulatorActivity : AppCompatActivity() {
                         is EmulatorState.RunningFirmware -> {
                             setupSustainedPerformanceMode()
                             setupFpsCounter()
-                            binding.textLoading.isGone = true
+                            hideLoadingState()
                             binding.viewLayoutControls.isVisible = true
                             backPressedCallback.isEnabled = true
                             if (it is EmulatorState.RunningRom) {
@@ -574,19 +587,19 @@ class EmulatorActivity : AppCompatActivity() {
                         is EmulatorState.RomLoadError -> {
                             binding.viewLayoutControls.isInvisible = true
                             binding.textFps.isGone = true
-                            binding.textLoading.isGone = true
+                            hideLoadingState()
                             showRomLoadErrorDialog()
                         }
                         is EmulatorState.FirmwareLoadError -> {
                             binding.viewLayoutControls.isInvisible = true
                             binding.textFps.isGone = true
-                            binding.textLoading.isGone = true
+                            hideLoadingState()
                             showFirmwareLoadErrorDialog(it)
                         }
                         is EmulatorState.RomNotFoundError -> {
                             binding.viewLayoutControls.isInvisible = true
                             binding.textFps.isGone = true
-                            binding.textLoading.isGone = true
+                            hideLoadingState()
                             showRomNotFoundDialog(it.romPath)
                         }
                     }
@@ -721,6 +734,8 @@ class EmulatorActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        val selectedSkin = me.magnum.melonds.impl.skins.DeltaSkinRepository(this).selected()
+        if (selectedSkin != appliedDeltaSkin) viewModel.runtimeLayout.value?.let { setupSoftInput(it) }
         choreographerFrameRenderer.startRendering()
         emulatorMotionManager.resume()
 
@@ -795,6 +810,7 @@ class EmulatorActivity : AppCompatActivity() {
 
     private fun setupSoftInput(layoutConfiguration: RuntimeInputLayoutConfiguration?) {
         if (layoutConfiguration != null) {
+            appliedDeltaSkin = me.magnum.melonds.impl.skins.DeltaSkinRepository(this).selected()
             setLayoutOrientation(layoutConfiguration.layoutOrientation)
             with(binding.viewLayoutControls) {
                 instantiateLayout(layoutConfiguration, LayoutTarget.MAIN_SCREEN)
@@ -858,24 +874,29 @@ class EmulatorActivity : AppCompatActivity() {
     }
 
     private fun showPauseMenu(pauseMenu: PauseMenu) {
-        val options = Array(pauseMenu.options.size) {
-            getString(pauseMenu.options[it].textResource)
-        }
-
         activeOverlays.addActiveOverlay(EmulatorOverlay.PAUSE_MENU)
-        AlertDialog.Builder(this)
-                .setTitle(R.string.pause)
-                .setItems(options) { _, which ->
-                    val selectedOption = pauseMenu.options[which]
-                    viewModel.onPauseMenuOptionSelected(selectedOption)
+        val dialog = androidx.activity.ComponentDialog(this)
+        dialog.setContentView(androidx.compose.ui.platform.ComposeView(this).apply {
+            setViewCompositionStrategy(androidx.compose.ui.platform.ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                me.magnum.melonds.ui.theme.MelonTheme {
+                    GlassPauseMenu(pauseMenu.options, onResume = { dialog.cancel() }, onOption = { option ->
+                        viewModel.onPauseMenuOptionSelected(option)
+                        dialog.dismiss()
+                    })
                 }
-                .setOnDismissListener {
-                    activeOverlays.removeActiveOverlay(EmulatorOverlay.PAUSE_MENU)
-                }
-                .setOnCancelListener {
-                    viewModel.resumeEmulator()
-                }
-                .show()
+            }
+        })
+        dialog.setOnDismissListener { activeOverlays.removeActiveOverlay(EmulatorOverlay.PAUSE_MENU) }
+        dialog.setOnCancelListener { viewModel.resumeEmulator() }
+        dialog.show()
+        dialog.window?.apply {
+            setBackgroundDrawable(android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT))
+            val density = resources.displayMetrics.density
+            setLayout(minOf(resources.displayMetrics.widthPixels - (48 * density).toInt(), (420 * density).toInt()), android.view.ViewGroup.LayoutParams.WRAP_CONTENT)
+            setDimAmount(0.55f)
+            addFlags(android.view.WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+        }
     }
 
     private fun disableScreenTimeOut() {
@@ -1001,7 +1022,13 @@ class EmulatorActivity : AppCompatActivity() {
     private fun showLoadingState() {
         binding.viewLayoutControls.isInvisible = true
         binding.textFps.isGone = true
-        binding.textLoading.isVisible = true
+        showLoadingOverlay.value = true
+        binding.loadingOverlay.isVisible = true
+    }
+
+    private fun hideLoadingState() {
+        showLoadingOverlay.value = false
+        binding.loadingOverlay.isGone = true
     }
 
     private fun updateOrientation(configuration: Configuration) {

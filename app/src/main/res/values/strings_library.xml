@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="library_title">Library</string>
+    <string name="library_subtitle">Hold a game to add artwork</string>
+    <string name="library_roms">ROMs</string>
+    <string name="library_add_folder">Add ROM folder</string>
+    <string name="library_empty">Your next game starts here</string>
+    <string name="library_empty_hint">Choose a folder with your DS games. Hold a game tile to add your own artwork.</string>
+    <string name="library_set_artwork">Set artwork</string>
+    <string name="library_artwork_error">Could not save artwork. Please choose another image.</string>
+    <string name="library_settings_subtitle">Make it feel like yours</string>
+    <string name="library_edit_game">Edit game</string>
+    <string name="library_rename">Rename game</string>
+    <string name="library_game_name">Game name</string>
+    <string name="library_save">Save</string>
+    <string name="library_cancel">Cancel</string>
+</resources>

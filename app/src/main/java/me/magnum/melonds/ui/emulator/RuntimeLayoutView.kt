@@ -28,6 +28,8 @@ class RuntimeLayoutView(context: Context, attrs: AttributeSet? = null) : LayoutV
     @Inject
     lateinit var touchVibrator: TouchVibrator
 
+    private var portraitSkinView: DeltaSkinView? = null
+
     private var currentRuntimeLayout: RuntimeInputLayoutConfiguration? = null
     private var frontendInputHandler: IInputListener? = null
     private var systemInputHandler: IInputListener? = null
@@ -66,13 +68,32 @@ class RuntimeLayoutView(context: Context, attrs: AttributeSet? = null) : LayoutV
     }
 
     fun setLayoutComponentToggleState(layoutComponent: LayoutComponent, isEnabled: Boolean) {
+        if (layoutComponent == LayoutComponent.BUTTON_FAST_FORWARD_TOGGLE) portraitSkinView?.fastForwardEnabled = isEnabled
         val toggleableImageView = getLayoutComponentView(layoutComponent)?.view as? ToggleableImageView ?: return
         toggleableImageView.setToggleState(isEnabled)
     }
 
     fun instantiateLayout(runtimeLayout: RuntimeInputLayoutConfiguration, layoutTarget: LayoutTarget) {
         currentRuntimeLayout = runtimeLayout
-        instantiateLayout(runtimeLayout.layout, layoutTarget)
+        portraitSkinView?.releaseAll()
+        portraitSkinView = null
+        val layout = runtimeLayout.layout
+        val components = layout.mainScreenLayout.components.orEmpty()
+        val useSkin = layoutTarget == LayoutTarget.MAIN_SCREEN && width > 0 && height > 0 &&
+            components.any { it.component == LayoutComponent.TOP_SCREEN } && components.any { it.component == LayoutComponent.BOTTOM_SCREEN }
+        val representation = if (useSkin) me.magnum.melonds.impl.skins.DeltaSkinRepository(context).representation(height > width, width.toFloat() / height) else null
+        val skin = representation?.let { runCatching { DeltaSkinLayout(context, width, height, it) }.getOrNull() }
+        if (skin != null) {
+            val skinComponents = listOf(
+                me.magnum.melonds.domain.model.layout.PositionedLayoutComponent(skin.screens[0], LayoutComponent.TOP_SCREEN),
+                me.magnum.melonds.domain.model.layout.PositionedLayoutComponent(skin.screens[1], LayoutComponent.BOTTOM_SCREEN),
+            )
+            instantiateLayout(layout.copy(mainScreenLayout = me.magnum.melonds.domain.model.layout.ScreenLayout(skinComponents)), layoutTarget)
+            portraitSkinView = DeltaSkinView(context, skin, systemInputHandler, frontendInputHandler,
+                touchFrame = { skin.screens[if (areScreensSwapped) 0 else 1] },
+                hapticFeedback = { if (currentRuntimeLayout?.isHapticFeedbackEnabled == true) touchVibrator.performTouchHapticFeedback() },
+            ).also { addView(it, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)) }
+        } else instantiateLayout(layout, layoutTarget)
         updateInputs()
         updateVisibility()
         setLayoutComponentToggleState(LayoutComponent.BUTTON_TOGGLE_SOFT_INPUT, isSoftInputVisible)
@@ -172,6 +193,10 @@ class RuntimeLayoutView(context: Context, attrs: AttributeSet? = null) : LayoutV
                 LayoutComponent.entries.toList().filter { it != LayoutComponent.BUTTON_TOGGLE_SOFT_INPUT}
             }
         }
+
+        portraitSkinView?.buttonsEnabled = isSoftInputVisible && currentRuntimeLayout?.softInputBehaviour != SoftInputBehaviour.ALWAYS_INVISIBLE
+
+        portraitSkinView?.hiddenKeys = hiddenComponents.flatMap { it.matchingInputs }.filter { it != Input.TOUCHSCREEN }.toSet()
 
         val visibleComponents = LayoutComponent.entries.filter { !hiddenComponents.contains(it) }
 

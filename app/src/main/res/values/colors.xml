@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#f44336</color>
-    <color name="colorPrimaryDark">#d32f2f</color>
-    <color name="colorAccent">@color/melonMain</color>
+    <color name="colorPrimary">#7050A0</color>
+    <color name="colorPrimaryDark">#15111D</color>
+    <color name="colorAccent">#C6ABFF</color>
     <color name="colorOnPrimary">#fff</color>
     <color name="colorOnSecondary">#fff</color>
     <color name="colorSurface">#fafafa</color>
@@ -26,14 +26,14 @@
     <color name="textLayoutEditor">@android:color/black</color>
 
     <color name="navigationBarBackground">#EEE</color>
-    <color name="prefSwitchRailColor">#805C913B</color>
+    <color name="prefSwitchRailColor">#807050A0</color>
     <color name="prefSwitchBackground">#FCCC</color>
 
-    <color name="melonMain">#5C913B</color>
-    <color name="melonDark">#49732F</color>
+    <color name="melonMain">#7050A0</color>
+    <color name="melonDark">#503575</color>
 
-    <color name="splashBackground">@color/colorPrimary</color>
-    <color name="splashToolbar">@color/colorPrimaryDark</color>
+    <color name="splashBackground">#15111D</color>
+    <color name="splashToolbar">#15111D</color>
 
     <color name="statusOk">#4A4</color>
     <color name="statusWarn">#FF9800</color>

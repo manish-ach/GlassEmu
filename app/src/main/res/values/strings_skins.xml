@@ -1,0 +1,12 @@
+<resources>
+    <string name="skins">Skins</string>
+    <string name="active_skin">Active skin</string>
+    <string name="import_delta_skin">Import .deltaskin</string>
+    <string name="import_delta_skin_summary">Choose a Nintendo DS skin. Portrait and landscape artwork are used when available.</string>
+    <string name="skin_imported">Imported and selected %1$s</string>
+    <string name="skin_import_error">Could not import skin: %1$s</string>
+    <string name="skin_default_controls">Default controls</string>
+    <string name="skin_builtin_name">Ultimate DSi White (included)</string>
+    <string name="skin_importing">Importing skin…</string>
+    <string name="glass_resume">Resume game</string>
+</resources>
