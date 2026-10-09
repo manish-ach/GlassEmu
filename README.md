@@ -1,5 +1,7 @@
 # GlassEmu
 
+<img src="branding/glassemu-crystal-shaded.png" alt="GlassEmu purple crystal logo" width="160" />
+
 GlassEmu is an eye-candy edit of melonDS Android, made for my personal taste. It refreshes the frontend and emulator skins while using the melonDS emulation core.
 
 Supports Android, with the layout tailored to the Samsung Galaxy A36.
